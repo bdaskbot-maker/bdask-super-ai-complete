@@ -106,9 +106,6 @@ export async function POST(request: NextRequest) {
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
       "I apologize, but I couldn't generate a response. Please try again.";
 
-    // Check if query was in Bengali
-    const isBengaliQuery = /[\u0980-\u09FF]/.test(message);
-
     return NextResponse.json({
       success: true,
       response: responseText,
