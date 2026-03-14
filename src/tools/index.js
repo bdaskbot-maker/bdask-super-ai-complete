@@ -213,7 +213,7 @@ class ToolRegistry {
         if (afterContext > 0) args.push(`-A ${afterContext}`);
       }
 
-      args.push(`"${pattern.replace(/"/g, '\"')}"`);
+      args.push(`"${pattern.replace(/"/g, '\\"')}"`);
       args.push('.');
 
       if (filePattern) args.push(`--glob "${filePattern}"`);
