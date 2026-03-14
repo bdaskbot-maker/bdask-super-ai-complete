@@ -8,12 +8,30 @@ const { v4: uuidv4 } = require('uuid');
 // Cache for system prompt
 let SYSTEM_PROMPT = null;
 
+// Default system prompt fallback
+const DEFAULT_SYSTEM_PROMPT = `You are BDAsk Super AI, Bangladesh's most advanced AI assistant with coding capabilities.
+You can help with:
+- Code writing, editing, and file operations
+- Web search and research
+- Task automation and project management
+- Support for Bengali (বাংলা) and English languages
+
+Be helpful, accurate, and concise. Use tools when needed to complete tasks.`;
+
 function getSystemPrompt() {
   if (!SYSTEM_PROMPT) {
-    SYSTEM_PROMPT = fs.readFileSync(
-      path.join(__dirname, '../prompts/bdask-agent-prompt.txt'),
-      'utf8'
-    );
+    try {
+      const promptPath = path.join(__dirname, '../prompts/bdask-agent-prompt.txt');
+      if (fs.existsSync(promptPath)) {
+        SYSTEM_PROMPT = fs.readFileSync(promptPath, 'utf8');
+      } else {
+        console.warn('System prompt file not found, using default prompt');
+        SYSTEM_PROMPT = DEFAULT_SYSTEM_PROMPT;
+      }
+    } catch (error) {
+      console.error('Error loading system prompt:', error.message);
+      SYSTEM_PROMPT = DEFAULT_SYSTEM_PROMPT;
+    }
   }
   return SYSTEM_PROMPT;
 }

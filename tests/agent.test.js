@@ -213,7 +213,7 @@ describe('BDAsk Super AI', () => {
 // Performance Tests
 describe('Performance', () => {
   test('tool execution should complete within timeout', async () => {
-    const tools = new ToolRegistry();
+    const tools = new ToolRegistry({ workspaceRoot: '/tmp/test' });
 
     const start = Date.now();
     await tools.execute('Bash', { 

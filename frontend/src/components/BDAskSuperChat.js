@@ -569,19 +569,13 @@ class BDAskSuperChat {
   }
 }
 
-// Export for module systems
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = BDAskSuperChat;
-}
- };
-
-    recognition.start();
-  }
-
   clearChat() {
     const messagesContainer = this.container.querySelector('#chat-messages');
-    messagesContainer.innerHTML = '';
+    if (messagesContainer) {
+      messagesContainer.innerHTML = '';
+    }
     this.conversationId = null;
+    this.messages = [];
     localStorage.removeItem('bdask_conversation_id');
     this.loadConversation();
   }
@@ -593,9 +587,36 @@ if (typeof module !== 'undefined' && module.exports) {
       // Optionally fetch conversation history from server
     }
   }
+
+  startVoiceRecognition() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      console.warn('Speech recognition not supported');
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'bn-BD'; // Bengali (Bangladesh)
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      const input = this.container.querySelector('#message-input');
+      if (input) {
+        input.value = transcript;
+        input.dispatchEvent(new Event('input'));
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+    };
+
+    recognition.start();
+  }
 }
 
-// Export for module usage
+// Export for module systems
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = BDAskSuperChat;
 }
