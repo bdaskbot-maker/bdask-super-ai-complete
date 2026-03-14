@@ -91,9 +91,9 @@ export const ChatMessage = memo(function ChatMessage({
         {message.isStreaming ? (
           <div className="flex items-center gap-2 text-muted-foreground">
             <div className="typing-indicator">
-              <span className="animate-typing-dot-1" />
-              <span className="animate-typing-dot-2" />
-              <span className="animate-typing-dot-3" />
+              <span />
+              <span />
+              <span />
             </div>
             <span className="text-sm">Thinking...</span>
           </div>

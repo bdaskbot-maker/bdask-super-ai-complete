@@ -48,6 +48,8 @@ export function useChat(options: UseChatOptions = {}) {
       try {
         abortControllerRef.current = new AbortController();
 
+        console.log("[v0] Sending message to API:", content.trim().substring(0, 50));
+        
         const response = await fetch("/api/agent/chat", {
           method: "POST",
           headers: {
@@ -61,11 +63,14 @@ export function useChat(options: UseChatOptions = {}) {
           signal: abortControllerRef.current.signal,
         });
 
+        console.log("[v0] API response status:", response.status);
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data: ChatResponse = await response.json();
+        console.log("[v0] API response data:", { success: data.success, hasResponse: !!data.response });
 
         if (!data.success) {
           throw new Error(data.error || "Unknown error occurred");
@@ -99,6 +104,7 @@ export function useChat(options: UseChatOptions = {}) {
           )
         );
       } catch (error) {
+        console.error("[v0] Chat error:", error);
         if (error instanceof Error && error.name === "AbortError") {
           // Request was cancelled
           setMessages((prev) =>
