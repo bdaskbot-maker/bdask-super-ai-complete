@@ -7,15 +7,23 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Menu, Trash2, Settings, Zap } from "lucide-react";
+import { Menu, Trash2, Settings, Zap, Cpu } from "lucide-react";
 
 interface HeaderProps {
   onMenuClick: () => void;
   onClearChat: () => void;
   conversationId: string | null;
+  modelName?: string;
+  providerName?: string;
 }
 
-export function Header({ onMenuClick, onClearChat, conversationId }: HeaderProps) {
+export function Header({ 
+  onMenuClick, 
+  onClearChat, 
+  conversationId,
+  modelName = "BDAsk AI",
+  providerName,
+}: HeaderProps) {
   return (
     <TooltipProvider>
       <header className="flex items-center justify-between border-b bg-card/50 px-4 py-3 backdrop-blur-sm">
@@ -34,7 +42,19 @@ export function Header({ onMenuClick, onClearChat, conversationId }: HeaderProps
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
               <Zap className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
-            <span className="font-semibold">BDAsk Super AI</span>
+            <div>
+              <span className="font-semibold">BDAsk Super AI</span>
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Cpu className="h-3 w-3" />
+                <span>{modelName}</span>
+                {providerName && (
+                  <>
+                    <span>•</span>
+                    <span>{providerName}</span>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
           {conversationId && (

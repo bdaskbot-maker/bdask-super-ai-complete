@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import type { Message, ChatResponse, ToolCall } from "@/lib/types";
+import type { Message, ChatResponse, ToolCall, ModelKey } from "@/lib/types";
 import { generateId } from "@/lib/utils";
 
 interface UseChatOptions {
   enableTools?: boolean;
+  model?: ModelKey;
+  enableThinking?: boolean;
   onError?: (error: Error) => void;
 }
 
 export function useChat(options: UseChatOptions = {}) {
-  const { enableTools = true, onError } = options;
+  const { enableTools = true, model = "kimi-k2.5", enableThinking = true, onError } = options;
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -57,12 +59,15 @@ export function useChat(options: UseChatOptions = {}) {
             message: content.trim(),
             conversation_id: conversationId,
             enable_tools: enableTools,
+            model,
+            enable_thinking: enableThinking,
           }),
           signal: abortControllerRef.current.signal,
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
 
         const data: ChatResponse = await response.json();
@@ -94,6 +99,7 @@ export function useChat(options: UseChatOptions = {}) {
                   content: data.response,
                   isStreaming: false,
                   toolCalls,
+                  reasoning: data.reasoning,
                 }
               : msg
           )
@@ -138,7 +144,7 @@ export function useChat(options: UseChatOptions = {}) {
         abortControllerRef.current = null;
       }
     },
-    [conversationId, enableTools, isLoading, onError]
+    [conversationId, enableTools, model, enableThinking, isLoading, onError]
   );
 
   const cancelRequest = useCallback(() => {

@@ -12,6 +12,7 @@ import {
 
 interface WelcomeScreenProps {
   onSuggestionClick: (suggestion: string) => void;
+  modelName?: string;
 }
 
 const suggestions = [
@@ -41,7 +42,7 @@ const suggestions = [
   },
 ];
 
-export function WelcomeScreen({ onSuggestionClick }: WelcomeScreenProps) {
+export function WelcomeScreen({ onSuggestionClick, modelName = "BDAsk AI" }: WelcomeScreenProps) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4 py-8">
       <div className="mb-8 flex flex-col items-center text-center">
@@ -50,7 +51,7 @@ export function WelcomeScreen({ onSuggestionClick }: WelcomeScreenProps) {
         </div>
         <h1 className="mb-2 text-2xl font-bold">BDAsk Super AI</h1>
         <p className="max-w-md text-muted-foreground">
-          Bangladesh&apos;s most advanced AI assistant with coding capabilities.
+          Bangladesh&apos;s most advanced AI assistant powered by <span className="font-medium text-foreground">{modelName}</span>.
           I can help you write code, search files, execute commands, and more.
         </p>
         <p className="mt-2 text-sm text-primary">

@@ -8,10 +8,13 @@ import { Header } from "./header";
 import { Sidebar } from "./sidebar";
 import { WelcomeScreen } from "./welcome-screen";
 import { useChat } from "@/hooks/use-chat";
+import { NVIDIA_MODELS, type ModelKey } from "@/lib/types";
 
 export function ChatContainer() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [enableTools, setEnableTools] = useState(true);
+  const [enableThinking, setEnableThinking] = useState(true);
+  const [selectedModel, setSelectedModel] = useState<ModelKey>("kimi-k2.5");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -24,6 +27,8 @@ export function ChatContainer() {
     regenerateLastMessage,
   } = useChat({
     enableTools,
+    model: selectedModel,
+    enableThinking,
     onError: (error) => {
       console.error("Chat error:", error);
     },
@@ -49,6 +54,8 @@ export function ChatContainer() {
     [sendMessage]
   );
 
+  const currentModel = NVIDIA_MODELS[selectedModel];
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar
@@ -56,6 +63,10 @@ export function ChatContainer() {
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         enableTools={enableTools}
         onToggleTools={setEnableTools}
+        enableThinking={enableThinking}
+        onToggleThinking={setEnableThinking}
+        selectedModel={selectedModel}
+        onSelectModel={setSelectedModel}
         onNewChat={handleNewChat}
       />
 
@@ -64,11 +75,16 @@ export function ChatContainer() {
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}
           onClearChat={clearMessages}
           conversationId={conversationId}
+          modelName={currentModel.name}
+          providerName={currentModel.provider}
         />
 
         <div className="relative flex-1 overflow-hidden">
           {messages.length === 0 ? (
-            <WelcomeScreen onSuggestionClick={handleSuggestionClick} />
+            <WelcomeScreen 
+              onSuggestionClick={handleSuggestionClick}
+              modelName={currentModel.name}
+            />
           ) : (
             <ScrollArea className="h-full">
               <div className="mx-auto max-w-4xl">
@@ -96,12 +112,11 @@ export function ChatContainer() {
               onSend={sendMessage}
               onCancel={cancelRequest}
               isLoading={isLoading}
-              placeholder={
-                enableTools
-                  ? "Message BDAsk Super AI... (Tools enabled)"
-                  : "Message BDAsk Super AI... (Tools disabled)"
-              }
+              placeholder={`Message ${currentModel.name}... ${enableTools ? "(Tools enabled)" : ""}`}
             />
+            <p className="mt-2 text-center text-xs text-muted-foreground">
+              Powered by {currentModel.provider} via NVIDIA API
+            </p>
           </div>
         </div>
       </div>

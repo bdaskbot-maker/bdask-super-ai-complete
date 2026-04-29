@@ -19,6 +19,9 @@ import {
   Terminal,
   Globe,
   AlertCircle,
+  Brain,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -45,8 +48,10 @@ export const ChatMessage = memo(function ChatMessage({
   isLast,
 }: ChatMessageProps) {
   const [copied, setCopied] = useState(false);
+  const [showReasoning, setShowReasoning] = useState(false);
   const isUser = message.role === "user";
   const isAssistant = message.role === "assistant";
+  const hasReasoning = message.reasoning && message.reasoning.length > 0;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(message.content);
@@ -103,6 +108,31 @@ export const ChatMessage = memo(function ChatMessage({
               <div className="flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
                 <AlertCircle className="h-4 w-4" />
                 <span>{message.error}</span>
+              </div>
+            )}
+
+            {/* Reasoning/Thinking Section */}
+            {hasReasoning && (
+              <div className="mb-3 rounded-lg border border-primary/20 bg-primary/5">
+                <button
+                  onClick={() => setShowReasoning(!showReasoning)}
+                  className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Brain className="h-4 w-4" />
+                    <span>Deep Thinking</span>
+                  </div>
+                  {showReasoning ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </button>
+                {showReasoning && (
+                  <div className="border-t border-primary/20 px-3 py-2 text-sm text-muted-foreground whitespace-pre-wrap">
+                    {message.reasoning}
+                  </div>
+                )}
               </div>
             )}
 
