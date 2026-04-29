@@ -1,0 +1,8 @@
+# BDAsk Super AI - Robots.txt
+# https://bdask-super-ai.vercel.app
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://bdask-super-ai.vercel.app/sitemap.xml
