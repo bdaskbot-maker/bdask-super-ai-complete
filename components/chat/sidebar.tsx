@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { NVIDIA_MODELS, type ModelKey } from "@/lib/types";
 import {
   MessageSquarePlus,
   History,
@@ -16,6 +17,9 @@ import {
   Globe,
   FileSearch,
   Terminal,
+  Cpu,
+  Brain,
+  Check,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -23,6 +27,10 @@ interface SidebarProps {
   onToggle: () => void;
   enableTools: boolean;
   onToggleTools: (enabled: boolean) => void;
+  enableThinking: boolean;
+  onToggleThinking: (enabled: boolean) => void;
+  selectedModel: ModelKey;
+  onSelectModel: (model: ModelKey) => void;
   onNewChat: () => void;
 }
 
@@ -38,6 +46,10 @@ export function Sidebar({
   onToggle,
   enableTools,
   onToggleTools,
+  enableThinking,
+  onToggleThinking,
+  selectedModel,
+  onSelectModel,
   onNewChat,
 }: SidebarProps) {
   return (
@@ -66,7 +78,7 @@ export function Sidebar({
             </div>
             <div>
               <h1 className="text-sm font-semibold">BDAsk Super AI</h1>
-              <p className="text-xs text-muted-foreground">v2.0</p>
+              <p className="text-xs text-muted-foreground">NVIDIA Powered</p>
             </div>
           </div>
           <Button
@@ -92,6 +104,55 @@ export function Sidebar({
 
         {/* Content */}
         <ScrollArea className="flex-1 px-4">
+          {/* Model Selection */}
+          <div className="mb-6">
+            <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+              <Cpu className="h-3 w-3" />
+              AI Model
+            </div>
+            <div className="space-y-1.5">
+              {(Object.entries(NVIDIA_MODELS) as [ModelKey, typeof NVIDIA_MODELS[ModelKey]][]).map(
+                ([key, config]) => (
+                  <button
+                    key={key}
+                    onClick={() => onSelectModel(key)}
+                    className={cn(
+                      "flex w-full items-start gap-3 rounded-lg p-2.5 text-left transition-colors",
+                      selectedModel === key
+                        ? "bg-primary/10 ring-1 ring-primary/30"
+                        : "bg-muted/30 hover:bg-muted/50"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "flex h-6 w-6 shrink-0 items-center justify-center rounded",
+                        selectedModel === key
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      )}
+                    >
+                      {selectedModel === key ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : (
+                        <Brain className="h-3.5 w-3.5" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm font-medium truncate">
+                          {config.name}
+                        </span>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {config.provider}
+                      </div>
+                    </div>
+                  </button>
+                )
+              )}
+            </div>
+          </div>
+
           {/* History Section */}
           <div className="mb-6">
             <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
@@ -148,6 +209,18 @@ export function Sidebar({
                 <Switch
                   checked={enableTools}
                   onCheckedChange={onToggleTools}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium">Deep Thinking</div>
+                  <div className="text-xs text-muted-foreground">
+                    Enable reasoning mode
+                  </div>
+                </div>
+                <Switch
+                  checked={enableThinking}
+                  onCheckedChange={onToggleThinking}
                 />
               </div>
             </div>
