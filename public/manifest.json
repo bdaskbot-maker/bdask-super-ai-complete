@@ -1,0 +1,21 @@
+{
+  "name": "BDAsk Super AI",
+  "short_name": "BDAsk AI",
+  "description": "Bangladesh's most advanced AI assistant powered by NVIDIA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f1a",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-512x512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "lang": "en",
+  "dir": "ltr"
+}
