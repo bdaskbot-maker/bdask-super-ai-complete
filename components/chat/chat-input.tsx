@@ -120,7 +120,7 @@ export function ChatInput({
       <div className="mt-2 flex items-center justify-between px-1 text-xs text-muted-foreground">
         <div className="flex items-center gap-1">
           <Sparkles className="h-3 w-3" />
-          <span>Powered by Gemini</span>
+          <span>NVIDIA AI</span>
         </div>
         <div>
           <kbd className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px]">
