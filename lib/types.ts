@@ -36,7 +36,7 @@ export interface ChatResponse {
   };
   tool_calls?: {
     tool: string;
-    args: string[];
+    args: Record<string, unknown>;
     status: string;
     summary: string;
   }[];

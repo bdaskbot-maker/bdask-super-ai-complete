@@ -11,10 +11,8 @@ You can help with:
 Be helpful, accurate, and concise. Use tools when needed to complete tasks.`;
 
 export async function POST(request: NextRequest) {
-  console.log("[v0] Chat API called");
   try {
     const body = await request.json();
-    console.log("[v0] Request body:", { message: body.message?.substring(0, 50), conversation_id: body.conversation_id });
     const { message, conversation_id, enable_tools = true } = body;
 
     if (!message || typeof message !== "string") {
@@ -38,7 +36,6 @@ export async function POST(request: NextRequest) {
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
-    console.log("[v0] API Key configured:", !!apiKey);
     
     if (!apiKey) {
       return NextResponse.json(
@@ -50,7 +47,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const model = process.env.GEMINI_MODEL || "gemini-2.0-flash-exp";
+    const model = process.env.GEMINI_MODEL || "gemini-1.5-flash";
     const convId = conversation_id || `conv_${Date.now()}`;
     const startTime = Date.now();
 
@@ -89,11 +86,8 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    console.log("[v0] Gemini API response status:", response.status);
-    
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error("[v0] Gemini API error:", errorData);
       return NextResponse.json(
         {
           success: false,
@@ -105,13 +99,11 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
     const duration = Date.now() - startTime;
-    console.log("[v0] Gemini response received, duration:", duration, "ms");
 
     // Extract text from response
     const responseText =
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
       "I apologize, but I couldn't generate a response. Please try again.";
-    console.log("[v0] Response text length:", responseText.length);
 
     return NextResponse.json({
       success: true,

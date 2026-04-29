@@ -12,7 +12,6 @@ import { useChat } from "@/hooks/use-chat";
 export function ChatContainer() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [enableTools, setEnableTools] = useState(true);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -71,7 +70,7 @@ export function ChatContainer() {
           {messages.length === 0 ? (
             <WelcomeScreen onSuggestionClick={handleSuggestionClick} />
           ) : (
-            <ScrollArea className="h-full" ref={scrollAreaRef}>
+            <ScrollArea className="h-full">
               <div className="mx-auto max-w-4xl">
                 {messages.map((message, index) => (
                   <ChatMessage
