@@ -14,6 +14,20 @@ class AgentLoop extends EventEmitter {
     this.conversationHistory = [];
     this.todos = [];
     this.iterationCount = 0;
+    
+    // Super Agent enhancements
+    this.agentName = config.agentName || 'BDAsk Super AI';
+    this.agentVersion = '2.0.0-super-agent';
+    this.enablePlanning = config.enablePlanning !== false;
+    this.enableKnowledge = config.enableKnowledge !== false;
+    this.enableMemory = config.enableMemory !== false;
+    this.memory = {
+      shortTerm: [],
+      longTerm: [],
+      learnings: []
+    };
+    this.taskPlan = null;
+    this.knowledge = [];
 
     this.tools = new ToolRegistry({
       workspaceRoot: this.workspaceRoot,
@@ -358,6 +372,109 @@ class AgentLoop extends EventEmitter {
       toolCalls: this.conversationHistory.filter(m => 
         m.parts.some(p => p.functionCall)
       ).length
+    };
+  }
+
+  // Super Agent: Planning Module
+  createTaskPlan(userInput) {
+    if (!this.enablePlanning) return null;
+
+    this.taskPlan = {
+      id: `plan_${Date.now()}`,
+      createdAt: new Date(),
+      steps: this.parseTaskSteps(userInput),
+      status: 'active',
+      completedSteps: 0
+    };
+
+    this.emit('planning', this.taskPlan);
+    return this.taskPlan;
+  }
+
+  parseTaskSteps(input) {
+    // Simple step parsing - can be enhanced with NLP
+    const steps = [];
+    const sentences = input.split(/[.!?]+/).filter(s => s.trim());
+
+    sentences.forEach((sentence, index) => {
+      if (sentence.trim()) {
+        steps.push({
+          number: index + 1,
+          description: sentence.trim(),
+          status: 'pending'
+        });
+      }
+    });
+
+    return steps.length > 0 ? steps : [{ number: 1, description: input, status: 'pending' }];
+  }
+
+  // Super Agent: Memory Module
+  addToMemory(data, type = 'shortTerm') {
+    if (!this.enableMemory) return;
+
+    const memoryEntry = {
+      timestamp: new Date(),
+      data,
+      type,
+      id: `mem_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    };
+
+    if (type === 'shortTerm') {
+      this.memory.shortTerm.push(memoryEntry);
+      // Keep last 100 items
+      if (this.memory.shortTerm.length > 100) {
+        this.memory.shortTerm.shift();
+      }
+    } else if (type === 'longTerm') {
+      this.memory.longTerm.push(memoryEntry);
+    } else if (type === 'learning') {
+      this.memory.learnings.push(memoryEntry);
+    }
+
+    this.emit('memory_update', { type, size: this.memory[type + 'Term']?.length || this.memory.learnings.length });
+  }
+
+  getMemory(type = 'shortTerm') {
+    if (!this.enableMemory) return [];
+    return this.memory[type] || this.memory.learnings || [];
+  }
+
+  // Super Agent: Knowledge Module
+  addKnowledge(knowledge) {
+    if (!this.enableKnowledge) return;
+
+    this.knowledge.push({
+      id: `know_${Date.now()}`,
+      content: knowledge,
+      addedAt: new Date(),
+      confidence: 0.8
+    });
+
+    this.emit('knowledge_update', { count: this.knowledge.length });
+  }
+
+  // Super Agent: Event Streaming
+  getAgentInfo() {
+    return {
+      name: this.agentName,
+      version: this.agentVersion,
+      conversationId: this.conversationId,
+      capabilities: {
+        planning: this.enablePlanning,
+        memory: this.enableMemory,
+        knowledge: this.enableKnowledge,
+        tools: this.enableTools
+      },
+      stats: {
+        iterations: this.iterationCount,
+        memorySize: {
+          shortTerm: this.memory.shortTerm.length,
+          longTerm: this.memory.longTerm.length,
+          learnings: this.memory.learnings.length
+        },
+        knowledgeSize: this.knowledge.length
+      }
     };
   }
 }
