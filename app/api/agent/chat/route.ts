@@ -1,175 +1,160 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Default system prompt
-const DEFAULT_SYSTEM_PROMPT = `You are BDAsk Super AI, Bangladesh's most advanced AI assistant with coding capabilities.
-You can help with:
-- Code writing, editing, and file operations
-- Web search and research
-- Task automation and project management
-- Support for Bengali (বাংলা) and English languages
+// ==========================================
+// AGENT TIER DEFINITIONS
+// ==========================================
 
-Be helpful, accurate, and concise. Use tools when needed to complete tasks.`;
+// TIER 1: AI AGENT - Foundation Agent
+const AI_AGENT_SYSTEM_PROMPT = `You are AI Agent, BDAsk's foundational AI assistant.
+Core capabilities:
+- Natural language understanding in Bengali and English
+- File operations (read, write, search)
+- Web search and information retrieval
+- Code execution and debugging
+- Real-time conversation management
 
-// Available NVIDIA Models
-export const NVIDIA_MODELS = {
-  "kimi-k2.5": {
-    id: "moonshotai/kimi-k2.5",
-    name: "Kimi K2.5",
-    provider: "Moonshot AI",
-    hasThinking: true,
-    maxTokens: 16384,
+You are helpful, accurate, and concise. Use tools when needed.`;
+
+// TIER 2: SUPER AGENT - Enterprise Agent
+const SUPER_AGENT_SYSTEM_PROMPT = `You are Super Agent, an advanced autonomous AI system.
+Advanced capabilities:
+- Task planning and breakdown
+- Multi-tier memory management (short/long term)
+- Knowledge base building and learning
+- Complex problem solving
+- Event-driven task execution
+- Real-time progress streaming
+
+You operate with planning, memory, and knowledge acquisition.`;
+
+// TIER 3: DEV AGENT - Development Agent
+const DEV_AGENT_SYSTEM_PROMPT = `You are Dev Agent (E1), a full-stack development specialist.
+Development expertise:
+- React frontend development with mock data
+- Backend API design (Express/FastAPI)
+- Database schema design
+- Testing framework setup
+- Deployment automation
+- Full-stack integration
+
+You deliver production-ready applications with complete documentation.`;
+
+// ==========================================
+// OPENAI MODELS CONFIGURATION
+// ==========================================
+
+export const OPENAI_MODELS = {
+  "gpt-4o": {
+    id: "gpt-4o",
+    name: "GPT-4 Omni",
+    provider: "OpenAI",
+    maxTokens: 4096,
+    tier: "ai-agent",
   },
-  "nemotron-super": {
-    id: "nvidia/nemotron-3-super-120b-a12b",
-    name: "Nemotron Super 120B",
-    provider: "NVIDIA",
-    hasThinking: true,
-    maxTokens: 16384,
+  "gpt-4-turbo": {
+    id: "gpt-4-turbo",
+    name: "GPT-4 Turbo",
+    provider: "OpenAI",
+    maxTokens: 4096,
+    tier: "ai-agent",
   },
-  "gemma-4": {
-    id: "google/gemma-4-31b-it",
-    name: "Gemma 4 31B",
-    provider: "Google",
-    hasThinking: true,
-    maxTokens: 16384,
-  },
-  "glm-5": {
-    id: "z-ai/glm-5.1",
-    name: "GLM 5.1",
-    provider: "Z-AI",
-    hasThinking: true,
-    maxTokens: 16384,
+  "gpt-3.5-turbo": {
+    id: "gpt-3.5-turbo",
+    name: "GPT-3.5 Turbo",
+    provider: "OpenAI",
+    maxTokens: 4096,
+    tier: "ai-agent",
   },
 } as const;
 
-export type ModelKey = keyof typeof NVIDIA_MODELS;
+export type ModelKey = keyof typeof OPENAI_MODELS;
+export type AgentTier = "ai-agent" | "super-agent" | "dev-agent";
 
-const NVIDIA_API_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
-
+// ==========================================
+// API ENDPOINT: AI AGENT (Tier 1)
+// ==========================================
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { 
       message, 
-      conversation_id, 
-      enable_tools = true,
-      model: modelKey = "kimi-k2.5",
-      enable_thinking = true,
+      conversation_id,
+      model: modelKey = "gpt-4o",
+      tier = "ai-agent",
     } = body;
 
+    // Validation
     if (!message || typeof message !== "string") {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Message is required and must be a string",
-        },
+        { success: false, error: "Message is required" },
         { status: 400 }
       );
     }
 
     if (message.length > 10000) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "Message too long (max 10000 characters)",
-        },
+        { success: false, error: "Message too long (max 10000)" },
         { status: 400 }
       );
     }
 
-    const apiKey = process.env.NVIDIA_API_KEY;
-    
+    const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
-        {
-          success: false,
-          error: "NVIDIA_API_KEY is not configured. Please add it to your environment variables.",
-        },
+        { success: false, error: "OPENAI_API_KEY not configured" },
         { status: 500 }
       );
     }
 
     // Get model config
-    const modelConfig = NVIDIA_MODELS[modelKey as ModelKey] || NVIDIA_MODELS["kimi-k2.5"];
+    const modelConfig = OPENAI_MODELS[modelKey as ModelKey] || OPENAI_MODELS["gpt-4o"];
     const convId = conversation_id || `conv_${Date.now()}`;
     const startTime = Date.now();
 
-    // Build chat template kwargs based on model
-    const chatTemplateKwargs: Record<string, boolean | number> = {};
-    
-    if (modelConfig.hasThinking && enable_thinking) {
-      if (modelKey === "kimi-k2.5") {
-        chatTemplateKwargs.thinking = true;
-      } else if (modelKey === "glm-5") {
-        chatTemplateKwargs.enable_thinking = true;
-        chatTemplateKwargs.clear_thinking = false;
-      } else {
-        chatTemplateKwargs.enable_thinking = true;
-      }
+    // Select system prompt based on tier
+    let systemPrompt = AI_AGENT_SYSTEM_PROMPT;
+    if (tier === "super-agent") {
+      systemPrompt = SUPER_AGENT_SYSTEM_PROMPT;
+    } else if (tier === "dev-agent") {
+      systemPrompt = DEV_AGENT_SYSTEM_PROMPT;
     }
 
-    // Build request payload
-    const payload: Record<string, unknown> = {
-      model: modelConfig.id,
-      messages: [
-        { role: "system", content: DEFAULT_SYSTEM_PROMPT },
-        { role: "user", content: message },
-      ],
-      max_tokens: modelConfig.maxTokens,
-      temperature: 0.7,
-      top_p: 0.95,
-      stream: false,
-    };
-
-    // Add chat template kwargs if not empty
-    if (Object.keys(chatTemplateKwargs).length > 0) {
-      payload.chat_template_kwargs = chatTemplateKwargs;
-    }
-
-    // Add reasoning budget for nemotron
-    if (modelKey === "nemotron-super" && enable_thinking) {
-      payload.reasoning_budget = 16384;
-    }
-
-    // Call NVIDIA API
-    const response = await fetch(NVIDIA_API_URL, {
+    // Call OpenAI API
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        "Accept": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        model: modelConfig.id,
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: message },
+        ],
+        max_tokens: modelConfig.maxTokens,
+        temperature: 0.7,
+        top_p: 0.95,
+      }),
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error("NVIDIA API Error:", response.status, errorData);
       return NextResponse.json(
-        {
-          success: false,
-          error: `AI model error: ${errorData?.error?.message || response.statusText || "Unknown error"}`,
-        },
+        { success: false, error: errorData?.error?.message || "API error" },
         { status: 500 }
       );
     }
 
     const data = await response.json();
     const duration = Date.now() - startTime;
-
-    // Extract text from response
-    const responseText =
-      data.choices?.[0]?.message?.content ||
-      "I apologize, but I couldn't generate a response. Please try again.";
-
-    // Extract reasoning content if available
-    const reasoningContent = data.choices?.[0]?.message?.reasoning_content || null;
+    const responseText = data.choices?.[0]?.message?.content || "No response";
 
     return NextResponse.json({
       success: true,
       response: responseText,
-      reasoning: reasoningContent,
       conversation_id: convId,
+      agent_tier: tier,
       meta: {
         duration_ms: duration,
         iterations: 1,
@@ -181,24 +166,49 @@ export async function POST(request: NextRequest) {
       tool_calls: [],
     });
   } catch (error) {
-    console.error("[Agent API Error]", error);
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Internal server error",
+        error: error instanceof Error ? error.message : "Internal error",
       },
       { status: 500 }
     );
   }
 }
 
+// ==========================================
+// GET ENDPOINT: Agent Information
+// ==========================================
 export async function GET() {
   return NextResponse.json({
     status: "ok",
     service: "bdask-super-agent",
-    version: "2.0.0",
-    nvidia_configured: !!process.env.NVIDIA_API_KEY,
-    available_models: Object.entries(NVIDIA_MODELS).map(([key, config]) => ({
+    version: "3.0.0-openai",
+    openai_configured: !!process.env.OPENAI_API_KEY,
+    agents: {
+      "ai-agent": {
+        name: "AI Agent",
+        tier: 1,
+        capabilities: ["chat", "file-ops", "web-search", "code-exec"],
+        description: "Foundational conversational AI assistant",
+        default_model: "gpt-4o",
+      },
+      "super-agent": {
+        name: "Super Agent",
+        tier: 2,
+        capabilities: ["chat", "planning", "memory", "knowledge", "reasoning"],
+        description: "Enterprise-grade autonomous agent with advanced features",
+        default_model: "gpt-4o",
+      },
+      "dev-agent": {
+        name: "Dev Agent (E1)",
+        tier: 3,
+        capabilities: ["frontend-dev", "backend-dev", "testing", "deployment"],
+        description: "Full-stack development automation specialist",
+        default_model: "gpt-4o",
+      },
+    },
+    available_models: Object.entries(OPENAI_MODELS).map(([key, config]) => ({
       key,
       ...config,
     })),
