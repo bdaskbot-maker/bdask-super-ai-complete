@@ -54,7 +54,7 @@ export function ChatContainer() {
     [sendMessage]
   );
 
-  const currentModel = NVIDIA_MODELS[selectedModel];
+  const currentModel = OPENAI_MODELS[selectedModel];
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -115,7 +115,7 @@ export function ChatContainer() {
               placeholder={`Message ${currentModel.name}... ${enableTools ? "(Tools enabled)" : ""}`}
             />
             <p className="mt-2 text-center text-xs text-muted-foreground">
-              Powered by {currentModel.provider} via NVIDIA API
+              Powered by {currentModel.provider}
             </p>
           </div>
         </div>
