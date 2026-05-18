@@ -12,7 +12,7 @@ interface UseChatOptions {
 }
 
 export function useChat(options: UseChatOptions = {}) {
-  const { enableTools = true, model = "kimi-k2.5", enableThinking = true, onError } = options;
+  const { enableTools = true, model = "gpt-4o", enableThinking = false, onError } = options;
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);

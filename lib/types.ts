@@ -55,41 +55,36 @@ export interface AgentConfig {
   enableThinking?: boolean;
 }
 
-// Available NVIDIA Models
-export const NVIDIA_MODELS = {
-  "kimi-k2.5": {
-    id: "moonshotai/kimi-k2.5",
-    name: "Kimi K2.5",
-    provider: "Moonshot AI",
-    hasThinking: true,
-    maxTokens: 16384,
-    description: "Advanced reasoning model",
+// Available OpenAI Models
+export const OPENAI_MODELS = {
+  "gpt-4o": {
+    id: "gpt-4o",
+    name: "GPT-4 Omni",
+    provider: "OpenAI",
+    maxTokens: 4096,
+    description: "Most capable, best for complex tasks",
+    tier: "ai-agent" as const,
   },
-  "nemotron-super": {
-    id: "nvidia/nemotron-3-super-120b-a12b",
-    name: "Nemotron Super 120B",
-    provider: "NVIDIA",
-    hasThinking: true,
-    maxTokens: 16384,
-    description: "NVIDIA's most powerful model",
+  "gpt-4-turbo": {
+    id: "gpt-4-turbo",
+    name: "GPT-4 Turbo",
+    provider: "OpenAI",
+    maxTokens: 4096,
+    description: "Fast and powerful",
+    tier: "ai-agent" as const,
   },
-  "gemma-4": {
-    id: "google/gemma-4-31b-it",
-    name: "Gemma 4 31B",
-    provider: "Google",
-    hasThinking: true,
-    maxTokens: 16384,
-    description: "Google's efficient model",
-  },
-  "glm-5": {
-    id: "z-ai/glm-5.1",
-    name: "GLM 5.1",
-    provider: "Z-AI",
-    hasThinking: true,
-    maxTokens: 16384,
-    description: "Powerful language model",
+  "gpt-3.5-turbo": {
+    id: "gpt-3.5-turbo",
+    name: "GPT-3.5 Turbo",
+    provider: "OpenAI",
+    maxTokens: 4096,
+    description: "Budget-friendly option",
+    tier: "ai-agent" as const,
   },
 } as const;
 
-export type ModelKey = keyof typeof NVIDIA_MODELS;
-export type ModelConfig = typeof NVIDIA_MODELS[ModelKey];
+export type ModelKey = keyof typeof OPENAI_MODELS;
+export type ModelConfig = typeof OPENAI_MODELS[ModelKey];
+
+// For backward compatibility
+export const NVIDIA_MODELS = OPENAI_MODELS as any;
