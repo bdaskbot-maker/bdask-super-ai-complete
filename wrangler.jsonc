@@ -1,0 +1,21 @@
+{
+  "name": "bdask-super-ai-complete",
+  "type": "javascript",
+  "main": ".output/server/index.js",
+  "compatibility_date": "2024-12-18",
+  "site": {
+    "bucket": ".output/public"
+  },
+  "routes": [
+    {
+      "pattern": "/cdn-cgi/*",
+      "zone_name": "example.com"
+    }
+  ],
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "bdask-super-ai-complete"
+    }
+  ]
+}
