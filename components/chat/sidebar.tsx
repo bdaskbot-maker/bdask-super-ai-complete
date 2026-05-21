@@ -78,7 +78,7 @@ export function Sidebar({
             </div>
             <div>
               <h1 className="text-sm font-semibold">BDAsk Super AI</h1>
-              <p className="text-xs text-muted-foreground">NVIDIA Powered</p>
+              <p className="text-xs text-muted-foreground">OpenAI Powered</p>
             </div>
           </div>
           <Button
