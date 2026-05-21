@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { NVIDIA_MODELS, type ModelKey } from "@/lib/types";
+import { OPENAI_MODELS, type ModelKey } from "@/lib/types";
 import {
   MessageSquarePlus,
   History,
@@ -111,7 +111,7 @@ export function Sidebar({
               AI Model
             </div>
             <div className="space-y-1.5">
-              {(Object.entries(NVIDIA_MODELS) as [ModelKey, typeof NVIDIA_MODELS[ModelKey]][]).map(
+              {(Object.entries(OPENAI_MODELS) as [ModelKey, typeof OPENAI_MODELS[ModelKey]][]).map(
                 ([key, config]) => (
                   <button
                     key={key}
