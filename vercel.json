@@ -1,12 +1,6 @@
 {
   "version": 2,
   "name": "BDAsk Super AI",
-  "env": {
-    "OPENAI_API_KEY": {
-      "description": "OpenAI API Key for AI model access",
-      "required": true
-    }
-  },
   "builds": [
     {
       "src": "package.json",
