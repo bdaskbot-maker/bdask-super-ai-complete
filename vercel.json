@@ -2,8 +2,8 @@
   "version": 2,
   "name": "BDAsk Super AI",
   "env": {
-    "NVIDIA_API_KEY": {
-      "description": "NVIDIA API Key for AI model access",
+    "OPENAI_API_KEY": {
+      "description": "OpenAI API Key for AI model access",
       "required": true
     }
   },

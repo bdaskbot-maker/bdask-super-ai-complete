@@ -15,16 +15,15 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "BDAsk Super AI - Bangladesh's Advanced AI Assistant",
   description:
-    "BDAsk Super AI is Bangladesh's most advanced AI assistant powered by NVIDIA. Support for Bengali and English, multiple AI models including Kimi K2.5, Nemotron, Gemma, and GLM.",
+    "BDAsk Super AI is Bangladesh's most advanced AI assistant powered by OpenAI. Support for Bengali and English, multiple AI models including GPT-4o, GPT-4 Turbo, and GPT-3.5 Turbo.",
   keywords: [
     "AI assistant",
     "Bangladesh",
     "Bengali AI",
-    "NVIDIA AI",
+    "OpenAI",
+    "GPT-4o",
     "code assistant",
     "chatbot",
-    "Kimi K2.5",
-    "Nemotron",
     "BDAsk",
   ],
   authors: [{ name: "BDAsk Team" }],
@@ -36,7 +35,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "BDAsk Super AI - Bangladesh's Advanced AI Assistant",
-    description: "Bangladesh's most advanced AI assistant powered by NVIDIA with multiple AI models",
+    description: "Bangladesh's most advanced AI assistant powered by OpenAI with GPT-4o",
     type: "website",
     siteName: "BDAsk Super AI",
     locale: "en_US",
@@ -52,7 +51,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "BDAsk Super AI - Bangladesh's Advanced AI Assistant",
-    description: "Bangladesh's most advanced AI assistant powered by NVIDIA",
+    description: "Bangladesh's most advanced AI assistant powered by OpenAI",
     images: ["/og-image.jpg"],
   },
   robots: {
