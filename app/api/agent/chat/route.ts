@@ -39,35 +39,9 @@ Development expertise:
 
 You deliver production-ready applications with complete documentation.`;
 
-// ==========================================
-// OPENAI MODELS CONFIGURATION
-// ==========================================
+// Import models from shared types
+import { OPENAI_MODELS, type ModelKey } from "@/lib/types";
 
-export const OPENAI_MODELS = {
-  "gpt-4o": {
-    id: "gpt-4o",
-    name: "GPT-4 Omni",
-    provider: "OpenAI",
-    maxTokens: 4096,
-    tier: "ai-agent",
-  },
-  "gpt-4-turbo": {
-    id: "gpt-4-turbo",
-    name: "GPT-4 Turbo",
-    provider: "OpenAI",
-    maxTokens: 4096,
-    tier: "ai-agent",
-  },
-  "gpt-3.5-turbo": {
-    id: "gpt-3.5-turbo",
-    name: "GPT-3.5 Turbo",
-    provider: "OpenAI",
-    maxTokens: 4096,
-    tier: "ai-agent",
-  },
-} as const;
-
-export type ModelKey = keyof typeof OPENAI_MODELS;
 export type AgentTier = "ai-agent" | "super-agent" | "dev-agent";
 
 // ==========================================
