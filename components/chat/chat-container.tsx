@@ -79,16 +79,14 @@ export function ChatContainer() {
           providerName={currentModel.provider}
         />
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 flex-col overflow-hidden w-full">
           {messages.length === 0 ? (
-            <div className="flex flex-1 flex-col w-full">
-              <WelcomeScreen 
-                onSuggestionClick={handleSuggestionClick}
-                modelName={currentModel.name}
-              />
-            </div>
+            <WelcomeScreen 
+              onSuggestionClick={handleSuggestionClick}
+              modelName={currentModel.name}
+            />
           ) : (
-            <ScrollArea className="h-full">
+            <ScrollArea className="flex-1 w-full">
               <div className="mx-auto max-w-4xl">
                 {messages.map((message, index) => (
                   <ChatMessage
